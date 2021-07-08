@@ -1,13 +1,15 @@
-Implementando recordar sesión
+Implementación de las rutas de las películas de usuario
 
--Generalmente cuando queremos implementar la opción de recordar sesión para Express mediante 
-  passport, lo que hacemos es extender la expiración de la Cookie.
+-La implementación del post y el delete tienen algo especial, y es que al hacer la
+  peticion con axios, enviamos en la configuración de la peticion los headers.
+-Estos serán un objeto, y añadimos Authorization, cuyo valor sea un string que inicie con
+  la palabra Bearer, seguido del valor que vendrá dentro de req.cookies.
 
-En nuestra ruta de sign-in de nuestro render server hacemos las siguientes modificaciones:
-  -Creamos afuera dos constantes que tengan 2 números:
-    .2592000
-    .7200
-  -Dentro dentro, taemos de la req.body el elemento rememberMe.
-  -En la conf. de la cookie, añadimos un elemento maxAge, y el valor será:
-    .Sí rememberMe da un valor positivo, será el valor de los 2592000, de lo contrario,
-      7200.
+-A la hora de hacer un login desde postman, pero hacia la ruta del render server, nos dara
+  como respuesta la info del usuario, pero vemos que en la respuesta que nos entregó, en
+  la sección de cookies, nos dará una cookie.
+-Con esa cookie, ahora haremos todas las request, ya que está tendrá nuestro JWT.
+
+
+-Para las pruebas, necesitaremos hacer la conf. de postman que no hicimos.
+-No la hemos hecho, por lo que solo nos funcionó el login.
