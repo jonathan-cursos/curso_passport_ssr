@@ -1,35 +1,13 @@
-Comunicación máquina a máquina
+Implementando recordar sesión
 
--En esta clase realizamos la estrategía de guardado del token recibido dentro de una cookie.
--Para ello, tenemos que realizar una estrategía básica aquí, y usarla en la ruta del login.
+-Generalmente cuando queremos implementar la opción de recordar sesión para Express mediante 
+  passport, lo que hacemos es extender la expiración de la Cookie.
 
-Estrategía:
-  -Es la estrategía básica, así que la hacemos como la anterior, pero cambia el manejo
-    de los datos.
-  -Dentro del manejo, hacemos una petición con axios a la api que estabamos haciendo, pero
-    no haremos ningun metodo, sino que como param de axios() pasamos un objeto que tenga:
-      .url: url del login de la página
-      .method: Será POST.
-      .auth: Pasamos un objeto, con el elemento password y username, ambos sacados de la
-        función de la estrategia (recordar que username será el email).
-      .data: Este es un elemento especifico de nuestra api, pasaremos un obj. con el elemento
-        apiKeyToken, y su valor será la apiToken que habiamos generado, pero la pública, ya
-        que estamos suponiendo que se logueará un cliente.
-  -Retornaremos el done(), con el 1er param. null y el segundo la data traída de axios.
-
-POST de las rutas para hacer login (dentro del index):
-  -Hay que hacer 2 pasos fuera del post:
-    .Importar y ejecutar de una la estrategia básica.
-    .Importar cookie-parser, y ejecutarlo como función dentro de app.use.
-  -Llamará a passport.authenticate() con un first error cb.
-  -Su parametro data tentrá la info del usuario traido y el token.
-  -Dentro llamaremos al login de la req. la sesion será en false, y tendrá una función con
-    el error.
-  -Dentro de ella, llamaremos a la función cookie() de la response con 3 params:
-    .Un string 'token' con el nombre de la cookie.
-    .El token, traído de la data.
-    .El objeto de conf. con 2 elementos:
-      -httpOnly
-      -secure
-      -Ambos obtendrán como valor la variable de entorno NODE_ENV, pero cuando sea 'production'.
-    .Responderemos con la info del usuario traído.
+En nuestra ruta de sign-in de nuestro render server hacemos las siguientes modificaciones:
+  -Creamos afuera dos constantes que tengan 2 números:
+    .2592000
+    .7200
+  -Dentro dentro, taemos de la req.body el elemento rememberMe.
+  -En la conf. de la cookie, añadimos un elemento maxAge, y el valor será:
+    .Sí rememberMe da un valor positivo, será el valor de los 2592000, de lo contrario,
+      7200.
