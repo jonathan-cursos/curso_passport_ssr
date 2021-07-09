@@ -1,15 +1,36 @@
-Implementación de las rutas de las películas de usuario
+¿Qué es OAuth 2.0 y OpenID Connect?
 
--La implementación del post y el delete tienen algo especial, y es que al hacer la
-  peticion con axios, enviamos en la configuración de la peticion los headers.
--Estos serán un objeto, y añadimos Authorization, cuyo valor sea un string que inicie con
-  la palabra Bearer, seguido del valor que vendrá dentro de req.cookies.
+-Estos estandares permiten implementar la auth. con redes sociales.
 
--A la hora de hacer un login desde postman, pero hacia la ruta del render server, nos dara
-  como respuesta la info del usuario, pero vemos que en la respuesta que nos entregó, en
-  la sección de cookies, nos dará una cookie.
--Con esa cookie, ahora haremos todas las request, ya que está tendrá nuestro JWT.
+-OAuth 2.0 es un estándar de la industria que nos permite implementar autorización.
+-OpenID Connect es una capa de autenticación que funciona sobre OAuth con métodos ya 
+  construidos.
 
+OAuth:
+  -Lo más importante es conocer los roles envueltos en los flujos:
+    1.User/Resource owner: El dueño de los recursos (desarrollador).
+    2.Service API/resource server: Servidor donde tenemos los datos.
+    3.App/Cliente: Cliente que intentará acceder a los datos en nombre del User.
+    4.Auth. server: Encargado de identificar la identidad del usuario.
+  -El flujo empieza cuando la App. quiere hacer un auth. request, y el User debe dar esa
+    auth. a acceder a sus recursos. Esto lo hace mediante un 'Auth Grant'.
+  -La app va al Auth server con este Grant, verifica que los datos sean correctos, y devuelve
+    un access token. Puede ser un token cualquiera, o un JWT.
+  -Ahora con ese token, el cliente puede solicitar recursos al API en nuestro nombre, porque
+    le dimos auth. con ese token.
 
--Para las pruebas, necesitaremos hacer la conf. de postman que no hicimos.
--No la hemos hecho, por lo que solo nos funcionó el login.
+OpenID Connect:
+  -Es un estandard, para que las personas no tengan que hacer su propia versión de 
+    autenticación sobre OAuth.
+  -La diferencia con OAuth es que el access token se usa solo para hacer llamados a la API.
+  -Entra un nuevo concepto llamado ID token, que permite saber sí el usuario está 
+    autenticado, así como su info.
+  -OpenID define unos claims y scopes definidos para este ID token. Debemos crear un 
+    endpoint 'userInfo' donde ingresemos el ID y nos retorne la info del usuario.
+  -Define tambien como debemos hacer uso del manejo de sesión, es decir, como hacer logout,
+    como hacer single sign on, etc.
+  -El flujo es:
+    .Se hace un req. a /authorize, y este nos dá el ID token.
+    .Este debe tener definidos los scopes de Open ID y profile.
+    .Con este ya sabemos que el usuario esta autenticado.
+    .Entonces ya podemos hacer req. a /user-info y obtener la info de ese usuario.
