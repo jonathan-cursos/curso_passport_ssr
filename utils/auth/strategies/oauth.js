@@ -38,7 +38,7 @@ const oAuth2Strategy = new OAuth2Strategy(
 );
 
 oAuth2Strategy.userProfile = function (accessToken, done) {
-  this.oauth2.get(GOOGLE_USERINFO_URL, accessToken, (err, body) => {
+  this._oauth2.get(GOOGLE_USERINFO_URL, accessToken, (err, body) => {
     if (err) {
       return done(err);
     }

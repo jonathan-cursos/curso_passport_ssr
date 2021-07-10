@@ -1,71 +1,22 @@
-Implementando 0Auth2.0 con Google
+Implementando Sign Provider en nuestra API
 
--Como el login se hace del lado del cliente, lo haremos en este server, no en la API.
--Debemos tener como var. de entorno el GOOGLE_CLIENT_ID y GOOGLE_CLIENT_SECRET
--Creamos un archivo para la estrategia, llamado oauth.js
--Debemos instalar passport-oauth.
+-La aplicación funcionará así:
+  .Debemos tener ambos servidores corriendo.
+  .Ingresaremos al del rendering a la ruta donde definimos el login.
+  .Al ingresar, nos pedirá que nos loguemos con un usuario de google.
+  .Sí lo hacemos, nos manda a la ruta que definimos como callback dentro de google.
+  .Dentro de esta ruta, podemos examinar con devtools las cookies, ahí debería aparecer nuestro token.
+  .Sí lo examinamos, saldrá nuestro nombre y email de google, junto con los scopes.
 
-oauth.js - Estrategia:
-  -Importamos passport, axios, y OAuth2Strategy de 'passport-oauth' para hacer la estrategia.
-  -Tendremos 3 constantes salidas de la documentación, serán estas:
-    .const GOOGLE_AUTHORIZATION_URL = "https://accounts.google.com/o/oauth2/v2/auth";
-    .const GOOGLE_TOKEN_URL = "https://www.googleapis.com/oauth2/v4/token";
-    .const GOOGLE_USERINFO_URL = "https://www.googleapis.com/oauth2/v3/userinfo";
-  -Creamos la estrategía creando una instancia de OAuth2Strategy, que lleva por params:
-    .Obj. de config.
-    .Función.
-  -Objeto de conf:
-    .authorizationURL: GOOGLE_AUTHORIZATION_URL
-    .tokenURL: GOOGLE_TOKEN_URL
-    .clientID: salido de la config. de google que hicimos.
-    .clientSecret: salido de la config. de google que hicimos.
-    .callbackURL: "/auth/google-oauth/callback"; Es el que colocamos en la conf de google, pero sin el localhost.
-  -Función:
-    .Tiene 4 params:
-      .accessToken: No usado
-      .refreshToken: No usado
-      .profile: Trae información del usuario de google
-      .done
-    .Con axios, enviaremos datos, lo que nos devolverá un objeto con datos, esta es la conf de axios:
-      -url: `/api/auth/sign-provider`: Endpoint del API,aun no creado.
-      -method: "post",
-      -data: {
-        name: nombre de google (del profile).
-        email: email de google.
-        password: pasamos el id del profile.
-        apiKeyToken: En nuestra app, debemos enviar el API_KEY_TOKEN. Pero por la conf. de nuestra app.
-      },
-    -Validamos errores que pueden surgir.
-    -Retornamos done, con null y con la data traída de la petición de axios.
+Cambios en el API server: 
+  .En el servicio de usuarios creamos un metodo para que,en caso de que se llame, sí el usuario existe, traiga ese
+    usuario, de lo contrario, lo crea.
+  .En el esquema de usarios, se creo uno donde traemos todos los datos del esquema normal para usuarios, pero añadimos
+    el del apiKeyToken.
+  .Se creo el endpoint del handler que nos estaba haciendo falta:
+    -Con la de obtenero crear un usuario, le pasamos el usuario traído de la req.
+    -Al final retornamos un JWT, con la infor del usuario que traímos.
+    -Este token es el que pasamos a la cookie, que definimos en la clase anterior.
+    -Responderemos con un objeto con ese token y la info del usuario.
 
-oauth.js - Perfil de usuario de la estrategia:
-  -De la estrategia, le damos una función como valor al elemento userProfile, que tendrá 2 params:
-    .accessToken
-    .done
-  -De la instancia, usaremos el metodo _oauth2.get() con 3 params:
-    .GOOGLE_USERINFO_URL
-    .accessToken
-    .First err cb.
-  -El First err cb, con un obj con los datos de google como 2do parametro (body):
-    .Retorna done con el error sí lo hay.
-    .Con un try, traemos de ese body parseado el sub, name, y email.
-    .Con hacemos el done con null y un perfil.
-    .Este es un objeto que tenga los elementos traidos del body. Pero, sub no se llamará sub en el perfil, sino id.
-    .En caso de error del try, lo hacemos igual con done.
-
-  oauth.js - usandolo en passport:
-    -Con un passport.use(), pasamos como 1er param el nombre de la estrategia, y como 2do la estrategia.
-
-  index.js:
-    -Creamos 2 endpoints con get:
-      /auth/google-oauth
-      /auth/google-oauth/callback (el que colocamos en google)
-    -/auth/google-oauth:
-      .Como 2do param está el passport.authenticate(), con el nombre de la estrategia y un obj.
-      .Este tiene un elemento scope, con un array con los siguientes scopes: ["email", "profile", "openid"].
-    -/auth/google-oauth/callback:
-      .Tiene el mismo 2do parametro, pero el objeto solo tiene el session en false.
-      .El 3ro será la función de siempre.
-      .En ella, desde la req recibiremos un user, con el token y un objeto con los datos del usuario.
-      .Crearemos una cookie igual a la que habiamos creado antes, con el token traido del usuario.
-      .Respondemos con el objeto de los datos del usuario sin el token.
+-Estamos obteniendo ese token por la realización del post que estamos haciendo dentro de la estrategia.
