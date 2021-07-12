@@ -22,6 +22,7 @@ app.use(passport.session());
 require("./utils/auth/strategies/basic");
 require("./utils/auth/strategies/oauth");
 require("./utils/auth/strategies/twitter");
+require("./utils/auth/strategies/facebook");
 
 app.post("/auth/sign-in", async function (req, res, next) {
   const { rememberMe } = req.body;
@@ -115,7 +116,7 @@ app.delete("/user-movies/:userMovieId", async function (req, res, next) {
 app.get(
   "/auth/google-oauth",
   passport.authenticate("google-oauth", {
-    scope: ["email", "profile", "openid"],
+    scope: ["email"],
   })
 );
 
@@ -143,6 +144,27 @@ app.get("/auth/twitter", passport.authenticate("twitter"));
 app.get(
   "/auth/twitter/callback",
   passport.authenticate("twitter", { session: false }),
+  function (req, res, next) {
+    if (!req.user) {
+      next(boom.unauthorized());
+    }
+
+    const { token, ...user } = req.user;
+
+    res.cookie("token", token, {
+      httpOnly: !config.dev,
+      secure: !config.dev,
+    });
+
+    res.status(200).json(user);
+  }
+);
+
+app.get("/auth/facebook", passport.authenticate("facebook"));
+
+app.get(
+  "/auth/facebook/callback",
+  passport.authenticate("facebook", { session: false }),
   function (req, res, next) {
     if (!req.user) {
       next(boom.unauthorized());

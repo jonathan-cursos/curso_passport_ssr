@@ -1,14 +1,10 @@
-Qué es OWASP y buenas prácticas de seguridad
+Inicio de sessión conFB:
 
--OWASP son las siglas de Open Web Application Security Project, una organización que cuida 
-  las buenas prácticas de seguridad en las aplicaciones.
--Tienen un listado de las 10 vulnerabilidades más explotadas.
+-Para crear el app: https://developers.facebook.com/apps/
+-Al crearla la añadimos como inicio de sesión con facebook.
+-En configuración > Basica > Vienen tanto el ID como el secret.
+-La url de redirección se configura en Productos > Inicio de sesion > Configuración >
+  URI de redireccionamiento de OAuth válidos. No puede ser de localhost.
 
-Buenas practicas:
-  -Usa un gestor de contraseñas.
-  -Usa multi-factor auth: Ademas de la contraseña, que tenga otro metodo como reconocimiento
-    facial o huella.
-  -IRL Security: Seguridad del entorno, como no dejar el PC sin protección.
-  -Mantener actualizadas apps y OS.
-  -Mantener actualizadas dependencias.
-  -Mantenerte informado.
+-Para la estrategia es mejor ver el documento.
+-No hay que poner scopes en la ruta de redireccionamiento.
