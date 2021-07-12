@@ -1,22 +1,13 @@
-Implementando Sign Provider en nuestra API
+Cómo crear una cuenta de desarrollador con Twitter
 
--La aplicación funcionará así:
-  .Debemos tener ambos servidores corriendo.
-  .Ingresaremos al del rendering a la ruta donde definimos el login.
-  .Al ingresar, nos pedirá que nos loguemos con un usuario de google.
-  .Sí lo hacemos, nos manda a la ruta que definimos como callback dentro de google.
-  .Dentro de esta ruta, podemos examinar con devtools las cookies, ahí debería aparecer nuestro token.
-  .Sí lo examinamos, saldrá nuestro nombre y email de google, junto con los scopes.
+-Para crear cuenta de desarrollador: https://developer.twitter.com/en/apply-for-access.html
+  .Llenamos los datos.
+  .Si la cuenta es de hace mucho, se aprueba de inmediato.
 
-Cambios en el API server: 
-  .En el servicio de usuarios creamos un metodo para que,en caso de que se llame, sí el usuario existe, traiga ese
-    usuario, de lo contrario, lo crea.
-  .En el esquema de usarios, se creo uno donde traemos todos los datos del esquema normal para usuarios, pero añadimos
-    el del apiKeyToken.
-  .Se creo el endpoint del handler que nos estaba haciendo falta:
-    -Con la de obtenero crear un usuario, le pasamos el usuario traído de la req.
-    -Al final retornamos un JWT, con la infor del usuario que traímos.
-    -Este token es el que pasamos a la cookie, que definimos en la clase anterior.
-    -Responderemos con un objeto con ese token y la info del usuario.
-
--Estamos obteniendo ese token por la realización del post que estamos haciendo dentro de la estrategia.
+Conseguir llaves:
+  -Nos vamos a nuestras apps en https://developer.twitter.com/en/apps.
+  -Creamos una nueva, damos nombre y copiamos el key y secret en nuestro .env.
+  -Nos vamos a 'Auth. settings':
+    .Habilitamos Oauth y email address.
+    .El callback URL usado será http://localhost:8000/auth/twitter/callback (El del ssr).
+    .Para los demás url que solicita, podemos colocar nuestro perfil de twitter.
