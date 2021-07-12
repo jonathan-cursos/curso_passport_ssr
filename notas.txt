@@ -1,13 +1,14 @@
-Seguridad con Helmet y npm audit
+Automatizar el chequeo de vulnerabilidades con Snyk
 
-Helmet:
-  -Middleware.
-  -Implemente automaticamente ciertas funciones para ataques que pudieran pasar en nuestra
-    app.
-  -Simplemente se instala, y la usamos como middleware.
-  -Se recomienda tanto en ssr como en la API.
-  -Documentación: https://helmetjs.github.io/
-
-npm audit:
-  -Podemos ver las vulnerabilidades de nuestro proyecto.
-  -Con npm audit fix las solucionamos.
+-Para usar snyk lo primero es crear una cuenta en https://app.snyk.io/signup para 
+  agilizar el proceso recomiendo usar la cuenta de GitHub.
+-Despues de la creación de la cuenta nos redireccionara a las integraciones.
+-Seleccionamos la integración con GitHub (ó con el servicio más adecuado para nuestro 
+  proyecto) y allí nos aseguramos de conectar nuestra cuenta con GitHub, otorgando los 
+  permisos necesarios.
+-Por ultimo necesitamos agregar el repositorio de nuestro proyecto para que haga la revision 
+  automática de vulnerabilidades en cada Pull request, mediante el botón Add your GitHub 
+  repositories to Snyk (parte superior derecha).
+-Cuando termine la integración podemos dirigirnos al dashboard.
+-Ahí estarán nuestros proyectos, e ingresando, nos muestra cuales vulnerabilidades tiene
+  y su nivel.
