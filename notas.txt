@@ -1,13 +1,54 @@
-Cómo crear una cuenta de desarrollador con Twitter
+Autenticación con Twitter
 
--Para crear cuenta de desarrollador: https://developer.twitter.com/en/apply-for-access.html
-  .Llenamos los datos.
-  .Si la cuenta es de hace mucho, se aprueba de inmediato.
+-Twitter para su autenticación maneja OAuth 1.0.
+-Por eso, necesitamos la dependencia express-session, porque manejaremos sesion.
+-Vamos a usar el metodo get de una librería llamada lodash, que ayuda a trabajar con
+  strings, obj. arrays etc. Lo importamos (solo get).
+-Traemos la clase Strategy de la dependencia "passport-twitter".
 
-Conseguir llaves:
-  -Nos vamos a nuestras apps en https://developer.twitter.com/en/apps.
-  -Creamos una nueva, damos nombre y copiamos el key y secret en nuestro .env.
-  -Nos vamos a 'Auth. settings':
-    .Habilitamos Oauth y email address.
-    .El callback URL usado será http://localhost:8000/auth/twitter/callback (El del ssr).
-    .Para los demás url que solicita, podemos colocar nuestro perfil de twitter.
+Config. estrategia:
+  -Similar a la de google.
+  -Como 1er param. un obj. de config. que trae:
+    .consumerKey.
+    .consumerSecret: Esta y la anterior las traemos de la app de twitter dev.
+    .callbackURL: Colocamos la ruta a donde nos redirecciona cuando se loguee, 
+      sin el localhost...,
+    .includeEmail: true
+  -Como 2do, una función con 4 params:
+    .token y tokenSecret (no usados).
+    .profile: Info. del usuario logueado.
+    .done
+  -La función llamará a axios con la conf:
+    .url: Llama a la función provider de la API.
+    .method: POST.
+    .data: Un obj:
+      -name: El elemento displayName del profile.
+      -email: El metodo get de lodash con 3 params: profile, "emails.0.value", [tt_username]@twitter.com (user conseguido
+        del profile).
+      -password: Pasaremos id del profile.
+      -apikeyToken: Esto es especifico de nuestra app.
+  -Sí no tenemos respuesta o el status es diferente a 200, mandamos un error con el done.
+  -Si funcionó, enviamos el done, con el error en null, y el elemento data de la respuesta de axios.
+
+Creación de un secret para la sesión:
+  -Vamos a keygen.io.
+  -Buscamos y copiamos en nuestras variables de entorno la que diga 'SHA 256-bit Key'.
+  -La ocuparemos al crear nuestra sesión
+
+Rutas:
+  -Importaremos y ejecutaremos automaticamente la estrategia de TT.
+  -Importamos express-session.
+  -Pasamos 3 middlewares:
+    .express-session: Como param lleva un objeto, donde el elemento secret, llevará el secreto de sesión.
+    .passport.initialize()
+    .passport.session()
+  -En la ruta donde queremos que se active la auth. solo necesitamos pasar el passport.authenticate().
+  -En la ruta del callback, que es donde nos devolverá al loguearnos, es donde guardaremos el token que
+    pasamos en la estrategia en una cookie.
+
+Ruta callback:
+  -Llamamos a la misma estrategia, pero con la session en false.
+  -Dentro, podremos sacar de la req el elemento user, esta segun la conf. traerá un token, y la info.
+    del usuario en un objeto.
+  -El token lo guardamos en la cookie.
+  -Podemos retornar el objeto con el usuario.
